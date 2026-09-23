@@ -1,6 +1,6 @@
-from abc import ABCMeta, ABC, abstractmethod
-
+from abc import ABC, abstractmethod
 from si.base.estimator import Estimator
+from si.data.dataset import Dataset
 
 
 class Model(Estimator, ABC):
@@ -15,7 +15,7 @@ class Model(Estimator, ABC):
         """
         super().__init__(**kwargs)
 
-    def predict(self, dataset):
+    def predict(self, dataset: Dataset):
         """
         Predict the target values of the dataset.
         The model needs to be fitted before calling this method.
@@ -30,41 +30,35 @@ class Model(Estimator, ABC):
         predictions: np.ndarray
             The predicted target values.
         """
-        if not self.is_fitted:
-            raise ValueError('Model needs to be fitted before calling predict()')
         return self._predict(dataset)
 
     @abstractmethod
-    def _predict(self, dataset):
+    def _predict(self, dataset: Dataset):
         """
-        Predict the target values of the dataset.
-        Abstract method that needs to be implemented by all subclasses.
+        Abstract method to predict the target values of the dataset.
+        """
+        raise NotImplementedError
+
+    def score(self, dataset: Dataset) -> float:
+        """
+        Compute the score of the model on the dataset.
+        The model needs to be fitted before calling this method.
 
         Parameters
         ----------
         dataset: Dataset
-            The dataset to predict the target values of.
+            The dataset to compute the score on.
 
         Returns
         -------
-        predictions: np.ndarray
-            The predicted target values.
+        score: float
+            The score of the model.
         """
+        return self._score(dataset)
 
-    def fit_predict(self, dataset):
+    @abstractmethod
+    def _score(self, dataset: Dataset) -> float:
         """
-        Fit the model to the dataset and predict the target values.
-        Equivalent to calling fit(dataset) and then predict(dataset).
-
-        Parameters
-        ----------
-        dataset: Dataset
-            The dataset to fit and predict the target values of.
-
-        Returns
-        -------
-        predictions: np.ndarray
-            The predicted target values.
+        Abstract method to compute the score of the model on the dataset.
         """
-        self.fit(dataset)
-        return self.predict(dataset)
+        raise NotImplementedError
